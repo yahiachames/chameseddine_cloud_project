@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+bastion_ip=$( terraform output -json bastion_ip  | jq  -s -r '.[0]' )
+
+sed -e "s/PGWIP/$bastion_ip/" ssh_config.tmpl > ssh_config

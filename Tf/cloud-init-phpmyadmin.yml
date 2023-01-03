@@ -1,0 +1,40 @@
+#cloud-config
+packages:
+  - curl
+  - jq
+  - git
+  - sudo
+  - unzip
+  - zip
+  - zsh
+
+runcmd:
+  # config network
+  - |
+    cat << 'EOF' >> /etc/network/interfaces
+    # interfaces(5) file used by ifup(8) and ifdown(8)
+    # from Scaleway
+    # The loopback network interface
+    auto lo
+    iface lo inet loopback
+
+    # Network configuration for Private Network "pvn-hungry-albattani":
+    auto ens5
+    iface ens5 inet static
+            address ${instance_ip}
+            netmask 255.255.255.0
+
+    # Include all other interfaces from /etc/network/interfaces.d:
+    source /etc/network/interfaces.d/*.cfg
+    EOF
+  - 'systemctl restart networking'
+  #install Docker:
+  - "sudo apt remove –y docker docker-engine docker.io containerd runc"
+  - "sudo apt update"
+  - "sudo apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common"
+  - "curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o/usr/share/keyrings/docker-archive-keyring.gpg"
+  - 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list'
+  - "sudo apt update"
+  - "sudo apt install -y docker-ce docker-ce-cli containerd.io"
+  - 'docker pull phpmyadmin'
+  - 'docker run --name phpmyadmin -d -e PMA_HOST=${db_ip} -e PMA_PORT=3306 -p 8080:80 phpmyadmin'

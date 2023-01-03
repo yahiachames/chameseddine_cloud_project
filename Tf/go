@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+if (( $# < 1 ))
+then
+  echo "Usage: $0 srvname"
+  exit 1
+fi
+
+srvname=$1
+
+#ssh -i ../ssh-keys/id_rsa_tfkeypair1 \
+ssh -i ~/.ssh/id_rsa_pv \
+    -o StrictHostKeyChecking=no \
+    -o UserKnownHostsFile=/dev/null \
+    -F ./ssh_config \
+    root@${srvname}.chameseddinepn

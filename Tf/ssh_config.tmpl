@@ -1,0 +1,7 @@
+# scaleway_vpc_public_gateway_ip.pgw_ip.address
+Host *.chameseddinepn
+  #ProxyJump bastion@PGWIP:61000
+  ProxyCommand=ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/id_rsa_pv -W %h:%p  -p 61000 bastion@PGWIP
+
+  StrictHostKeyChecking=no
+  UserKnownHostsFile=/dev/null

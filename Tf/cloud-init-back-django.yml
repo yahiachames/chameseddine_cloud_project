@@ -1,0 +1,89 @@
+#cloud-config
+packages:
+  - curl
+  - jq
+  - git
+  - sudo
+  - unzip
+  - zip
+  - zsh
+runcmd:
+  # config network
+  - |
+    cat << 'EOF' >> /etc/network/interfaces
+    # interfaces(5) file used by ifup(8) and ifdown(8)
+    # from Scaleway
+    # The loopback network interface
+    auto lo
+    iface lo inet loopback
+
+    # Network configuration for Private Network "pvn-hungry-albattani":
+    auto ens5
+    iface ens5 inet static
+            address ${ip_server}
+            netmask 255.255.255.0
+
+    # Include all other interfaces from /etc/network/interfaces.d:
+    source /etc/network/interfaces.d/*.cfg
+    EOF
+  - 'systemctl restart networking'
+  - "touch /home/.env"
+  - |
+    cat << 'EOF' >> /home/.env
+    SECRET_KEY=kobl@t=yw9d*0y%jt2gjnq78=u!z_rrxb&w8e47l!(jz@m79zy
+    DEBUG=True
+    DB_NAME=ecommerce
+    DB_USER=${db_username}
+    DB_PASSWORD=${db_password}
+    DB_HOST=${db_ip}
+    SERVER_HOST=${ip_server}
+    STRIPE_LIVE_PUBLIC_KEY=your-live-public-key
+    STRIPE_LIVE_SECRET_KEY=your-live-secret-key
+    STRIPE_TEST_PUBLIC_KEY=your-test-public-key
+    STRIPE_TEST_SECRET_KEY=your-test-secret-key
+    EOF
+  - 'cd /'
+  - 'mkdir app'
+  - 'cd /app'
+  - 'git clone -b master https://github.com/yahiachames/ecommerce_back.git '
+  - 'cd ecommerce_back'
+  - 'cp /home/.env /app/ecommerce_back/'
+  - 'apt update'
+  - 'apt-get -y install python3-pip && apt-get -y install python3-venv && apt-get install python3-dev libmysqlclient-dev'
+  - 'apt-get install -y apt-utils vim curl apache2 apache2-utils'
+  - 'apt-get -y install libapache2-mod-wsgi-py3'
+  - 'apt-get install python-dev default-libmysqlclient-dev'
+  - 'sudo apt install libjpeg-dev zlib1g-dev'
+  - 'apt-get -y install python3-dev default-libmysqlclient-dev build-essential'
+  - 'python3 -m venv venv'
+  - 'venv/bin/pip install -r requirements.txt'
+  - 'touch /etc/apache2/sites-available/django_project.conf'
+  - |
+    cat << 'EOF' >>  /etc/apache2/sites-available/django_project.conf
+    <VirtualHost *:80>
+        ServerName ${ip_server}
+        ServerAlias ${ip_server}
+        Alias /static/ /app/ecommerce_back/static_root/
+        <Directory /app/ecommerce_back/static_root>
+        Require all granted
+        </Directory>
+        Alias /media/ /app/ecommerce_back/media/
+        <Directory /app/ecommerce_back/media>
+        Require all granted
+        </Directory>
+        <Directory /app/ecommerce_back/djecommerce>
+        <Files wsgi.py>
+        Require all granted
+        </Files>
+        </Directory>
+        WSGIDaemonProcess myproject python-path=/app/ecommerce_back python-home=/app/ecommerce_back/venv
+        WSGIProcessGroup myproject
+        WSGIScriptAlias / /app/ecommerce_back/djecommerce/wsgi.py
+        </VirtualHost>
+    EOF
+  - 'a2ensite django_project'
+  - 'a2dissite 000-default.conf'
+  - 'a2enmod rewrite ssl'
+  - 'venv/bin/python3 manage.py migrate'
+  - 'venv/bin/python3 manage.py collectstatic'
+  - 'systemctl restart apache2'

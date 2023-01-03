@@ -1,0 +1,64 @@
+#cloud-config
+packages:
+  - curl
+  - jq
+  - git
+  - sudo
+  - unzip
+  - zip
+  - zsh
+
+runcmd:
+  # config network
+  - |
+    cat << 'EOF' >> /etc/network/interfaces
+    # interfaces(5) file used by ifup(8) and ifdown(8)
+    # from Scaleway
+    # The loopback network interface
+    auto lo
+    iface lo inet loopback
+
+    # Network configuration for Private Network "pvn-hungry-albattani":
+    auto ens5
+    iface ens5 inet static
+            address ${private_ip}
+            netmask 255.255.255.0
+
+    # Include all other interfaces from /etc/network/interfaces.d:
+    source /etc/network/interfaces.d/*.cfg
+    EOF
+  - 'systemctl restart networking'
+  # install nvm
+  - 'curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash'
+  - "sudo apt-get install -y nodejs"
+  # install react
+  - "cd /"
+  - "git clone https://github.com/yahiachames/ecommerce_frontend_remake.git"
+  - "touch /ecommerce_frontend_remake/.env"
+  - |
+    cat << 'EOF' >> /ecommerce_frontend_remake/.env
+    REACT_APP_API_KEY=${ip_server}:80
+    EOF
+  - "cd /ecommerce_frontend_remake"
+  - "npm install"
+  - "npm run build"
+  - "apt-get install nginx python3-certbot-nginx -y"
+  - "mkdir /var/www/html/react"
+  - "cp -r /ecommerce_frontend_remake/build/* /var/www/html/react/"
+  - "touch /etc/nginx/conf.d/react.conf"
+  - |
+    cat << 'EOF' >>  /etc/nginx/conf.d/react.conf
+         server {
+         listen 80;
+         listen [::]:80;
+         root /var/www/html/react/;
+         index index.html index.htm;
+         # MODIFY SERVER_NAME EXAMPLE
+         server_name ${ip_instance};
+         location / {
+              try_files $uri $uri/ =404;
+         }
+         }
+    EOF
+  - "nginx -t"
+  - "systemctl restart nginx"
