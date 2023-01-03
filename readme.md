@@ -40,7 +40,7 @@ création d'une plateforme E-commerce full stack react ,django et phpMyAdmin pou
 
 
 ## Déploiement
-
+- cd Tf
 - make init
 - make plan
 - make apply
