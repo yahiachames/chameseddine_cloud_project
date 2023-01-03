@@ -40,25 +40,8 @@ création d'une plateforme E-commerce full stack react ,django et phpMyAdmin pou
 
 
 ## Déploiement
-### Hardware :
-- accéder au dossier du deploy_terraform_scaleway
-- executer en terminal la commande "make apply" et inserer votre access_key et secret_key
-### Serveur Backend :
-- modifier  le variable DB_HOST = l'ip de votre base de données ici notre ip est privé  // fichier .env
-- modifier le variable SERVER_HOST = l'ip de votre serveur backend ici c'est l'ip de passerlle   // fichier .env
-- transferer les fichiers deploy_back.sh et .env sur l'instance dédiée 
-- executer la commande "sh deploy_back.sh"
-- accéder a l'interface utilisateur sur le port 3333
-### Serveur phpMyAdmin :
-- modifier PMA_HOST dans le fichier deploy_mysql.sh et ajouter l'ip de votre base de données ici l'ip est privé 
-- transférer les fichier deploy_mysql.sh et install_docker.sh sur l'instance dédiée 
-- executer la commande "sh deploy_mysql.sh"
-- accéder a l'interface utilisateur sur le port 8080 
-### serveur Front-end :
-- modifier le variable REACT_APP_API_KEY=l'ip de votre serveur back end ici l'ip est privé , // fichier .env
-- modifier le variable server_name ici l'ip est celui de passerelle // fichier react.conf
-- transférer les fichier .env,react.conf et deploy_ecommerce_front.sh  sur l'instance dédiée 
-- executer la commande "sh deploy_ecommerce_front.sh"
-- acceder a l'interface utilisateur sur le port 3000
 
-
+- make init
+- make plan
+- make apply
+#### l'ip publique affiché dans la terminale
