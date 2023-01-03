@@ -26,7 +26,7 @@ création d'une plateforme E-commerce full stack react ,django et phpMyAdmin pou
 - NAT
 ## Architecture réseau:
 
-![alt Architecture réseau](https://i.postimg.cc/1XnRCyNb/documentation-projet-cloud-drawio.png)
+![alt Architecture réseau](diagram.jpg)
 
 
 - un accés sur le port 3333 pour le l'interface  du serveur Back-end
