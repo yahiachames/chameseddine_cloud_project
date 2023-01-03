@@ -44,4 +44,4 @@ création d'une plateforme E-commerce full stack react ,django et phpMyAdmin pou
 - make init
 - make plan
 - make apply
-#### l'ip publique affiché dans la terminale
+
