@@ -7,7 +7,7 @@ data "template_file" "userdata_django_backend" {
     user        = "debian"
     db_ip       = "10.42.42.15"
     db_username = "admin"
-    db_password = "#Chameseddine14"
+    db_password = "test"
     ip_server   = "10.42.42.11"
 
   }
@@ -73,7 +73,7 @@ data "template_file" "userdata_react_frontend" {
     user        = "debian"
     db_ip       = "10.42.42.15"
     db_username = "admin"
-    db_password = "#Chameseddine14"
+    db_password = "test
     ip_instance = scaleway_instance_ip.public_ip.address
     private_ip = "10.42.42.13"
   }
@@ -105,7 +105,7 @@ resource "scaleway_rdb_instance" "main" {
   is_ha_cluster     = false
   disable_backup    = true
   user_name         = "admin"
-  password          = "#Chameseddine14"
+  password          = "test"
   region            = "fr-par"
   tags              = ["terraform-test", "scaleway_rdb_instance", "volume", "rdb_pn"]
   volume_type       = "bssd"
